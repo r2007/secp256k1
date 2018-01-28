@@ -154,6 +154,27 @@ static void secp256k1_ecmult_gen(const secp256k1_ecmult_gen_context *ctx, secp25
     secp256k1_ge_clear(&add);
     secp256k1_scalar_clear(&gnb);
 }
+/* quick and dirty copy */
+static void secp256k1_qd_ecmult_gen(const secp256k1_ecmult_gen_context *ctx, secp256k1_gej *r, const secp256k1_scalar *gn) {
+    secp256k1_ge add;
+    secp256k1_ge_storage adds;
+    secp256k1_scalar gnb;
+    int bits;
+    int j;
+    memset(&adds, 0, sizeof(adds));
+    *r = ctx->initial;
+    /* Blind scalar/point multiplication by computing (n-b)G + bG instead of nG. */
+    secp256k1_scalar_add(&gnb, gn, &ctx->blind);
+    add.infinity = 0;
+    for (j = 0; j < 64; j++) {
+        bits = secp256k1_scalar_get_bits(&gnb, j * 4, 4);
+        secp256k1_ge_from_storage(&add, &(*ctx->prec)[j][bits]);
+        secp256k1_gej_add_ge(r, r, &add);
+    }
+    /* bits = 0;
+    secp256k1_ge_clear(&add);
+    secp256k1_scalar_clear(&gnb); */
+}
 
 /* Setup blinding values for secp256k1_ecmult_gen. */
 static void secp256k1_ecmult_gen_blind(secp256k1_ecmult_gen_context *ctx, const unsigned char *seed32) {

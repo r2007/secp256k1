@@ -529,6 +529,13 @@ SECP256K1_API SECP256K1_WARN_UNUSED_RESULT int secp256k1_ec_pubkey_create(
     const unsigned char *seckey
 ) SECP256K1_ARG_NONNULL(1) SECP256K1_ARG_NONNULL(2) SECP256K1_ARG_NONNULL(3);
 
+/* quick and dirty copy from secp256k1_ec_pubkey_create */
+SECP256K1_API SECP256K1_WARN_UNUSED_RESULT int secp256k1_qd_ec_pubkey_create(
+    const secp256k1_context* ctx,
+    secp256k1_pubkey *pubkey,
+    const unsigned char *seckey
+) SECP256K1_ARG_NONNULL(1) SECP256K1_ARG_NONNULL(2) SECP256K1_ARG_NONNULL(3);
+
 /** Negates a private key in place.
  *
  *  Returns: 1 always

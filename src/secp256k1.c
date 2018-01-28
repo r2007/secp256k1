@@ -439,6 +439,30 @@ int secp256k1_ec_pubkey_create(const secp256k1_context* ctx, secp256k1_pubkey *p
     return ret;
 }
 
+/* quick and dirty copy from secp256k1_ec_pubkey_create */
+int secp256k1_qd_ec_pubkey_create(const secp256k1_context* ctx, secp256k1_pubkey *pubkey, const unsigned char *seckey) {
+    secp256k1_gej pj;
+    secp256k1_ge p;
+    secp256k1_scalar sec;
+    int overflow;
+    int ret = 0;
+    /* VERIFY_CHECK(ctx != NULL);
+    ARG_CHECK(pubkey != NULL); */
+    memset(pubkey, 0, sizeof(*pubkey));
+    /* ARG_CHECK(secp256k1_ecmult_gen_context_is_built(&ctx->ecmult_gen_ctx));
+    ARG_CHECK(seckey != NULL); */
+
+    secp256k1_scalar_set_b32(&sec, seckey, &overflow);
+    ret = (!overflow) & (!secp256k1_scalar_is_zero(&sec));
+    if (ret) {
+        secp256k1_qd_ecmult_gen(&ctx->ecmult_gen_ctx, &pj, &sec);
+        secp256k1_ge_set_gej(&p, &pj);
+        secp256k1_pubkey_save(pubkey, &p);
+    }
+    /* secp256k1_scalar_clear(&sec); */
+    return ret;
+}
+
 int secp256k1_ec_privkey_negate(const secp256k1_context* ctx, unsigned char *seckey) {
     secp256k1_scalar sec;
     VERIFY_CHECK(ctx != NULL);
