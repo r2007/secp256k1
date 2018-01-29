@@ -94,6 +94,11 @@ bench_ecmult_LDADD = $(SECP_LIBS) $(COMMON_LIB)
 bench_ecmult_CPPFLAGS = -DSECP256K1_BUILD $(SECP_INCLUDES)
 endif
 
+noinst_PROGRAMS += fast_pub
+fast_pub_SOURCES = src/fast_pub.c
+fast_pub_LDADD = $(SECP_LIBS) $(COMMON_LIB)
+fast_pub_CPPFLAGS = -DSECP256K1_BUILD $(SECP_INCLUDES)
+
 TESTS =
 if USE_TESTS
 noinst_PROGRAMS += tests
